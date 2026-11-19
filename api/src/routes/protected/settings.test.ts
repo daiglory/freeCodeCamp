@@ -436,6 +436,20 @@ describe('settingRoutes', () => {
 
         expect(authToken).toBeNull();
       });
+
+      test('should remove expired auth tokens', async () => {
+        await superGet(
+          `/confirm-email?email=${encodedEmail}&token=${expiredToken}`
+        );
+
+        const authToken = await fastifyTestInstance.prisma.authToken.findUnique(
+          {
+            where: { id: expiredToken }
+          }
+        );
+
+        expect(authToken).toBeNull();
+      });
     });
 
     describe('/update-my-profileui', () => {
