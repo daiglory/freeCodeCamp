@@ -993,8 +993,8 @@ export const settingRedirectRoutes: FastifyPluginCallbackTypebox = (
         return reply.redirectWithMessage(origin, redirectMessage);
       }
 
-      // TODO(Post-MVP): clean up expired auth tokens.
       if (isExpired(authToken)) {
+        await fastify.prisma.authToken.delete({ where: { id: authToken.id } });
         req.log.warn('Token expired');
         fastify.Sentry?.metrics?.count('settings.email_confirm_rejected', 1, {
           attributes: { reason: 'expired' }
